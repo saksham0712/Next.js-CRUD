@@ -1,94 +1,110 @@
+"use client";
 import Image from "next/image";
 import styles from "./page.module.css";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [all, setAll] = useState([]);
+  const [users, setUsers] = useState({});
+
+  const handleChange = (e) => {
+    setUsers({ ...users, [e.target.name]: e.target.value });
+    console.log("this is user keyboard input:", users);
+  };
+
+  useEffect(() => {
+    const fetchusers = async () => {
+      const response = await fetch("/api/getusers");
+      const data = await response.json();
+      console.log("this is api response:", data);
+      setAll(data);
+    };
+    fetchusers();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("this is after submit:", users);
+    const response = await fetch("/api/createusers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(users),
+    });
+    const result = await response.json();
+    console.log("User added:", result);
+    // Refresh the list of users after adding
+    const fetchusers = async () => {
+      const response = await fetch("/api/getusers");
+      const data = await response.json();
+      setAll(data);
+    };
+    fetchusers();
+  };
+
+  const deleteuser = async (id) => {
+    const response = await fetch("/api/deleteuser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+    const result = await response.json();
+    console.log("User deleted:", result);
+    // Refresh the list of users after deleting
+    const fetchusers = async () => {
+      const response = await fetch("/api/getusers");
+      const data = await response.json();
+      setAll(data);
+    };
+    fetchusers();
+  };
+
+  const updateUser = async (id) => {
+    console.log(`Update user with ID: ${id}`);
+    // Here you can implement the logic for updating the user
+  };
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+      <h1>CRUD Operations In Next.js</h1>
+      <div>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              onChange={handleChange}
+              required
             />
-          </a>
+          </div>
+          <div>
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit">Add</button>
+        </form>
+        <div>
+          {all.map((item) => (
+            <div key={item.id} className={styles.tab}>
+              <p>{item.id}</p>
+              <h3>{item.name}</h3>
+              <p>{item.email}</p>
+              <button onClick={() => deleteuser(item.id)}>Delete</button>
+              <button onClick={() => updateUser(item.id)}>Update</button>
+            </div>
+          ))}
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
       </div>
     </main>
   );

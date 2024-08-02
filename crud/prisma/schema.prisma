@@ -15,6 +15,6 @@ datasource db {
  model users {
   id Int @id @default(autoincrement())
   name String 
-  email String @unique
+  email String 
   updatedAt DateTime @updatedAt
  }
