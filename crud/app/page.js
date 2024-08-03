@@ -5,18 +5,21 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [all, setAll] = useState([]);
-  const [users, setUsers] = useState({});
+
+  const [users, setUsers] = useState({ id: '', name: '', email: '' });
+  
+  const [isEditing, setIsEditing] = useState(false)
 
   const handleChange = (e) => {
     setUsers({ ...users, [e.target.name]: e.target.value });
-    console.log("this is user keyboard input:", users);
+    // console.log("this is user keyboard input:", users);
   };
 
   useEffect(() => {
     const fetchusers = async () => {
       const response = await fetch("/api/getusers");
       const data = await response.json();
-      console.log("this is api response:", data);
+      // console.log("this is api response:", data);
       setAll(data);
     };
     fetchusers();
@@ -24,8 +27,9 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("this is after submit:", users);
-    const response = await fetch("/api/createusers", {
+    // console.log("this is after submit:", users);
+    const URL = isEditing ? '/api/updateuser' : '/api/createusers';
+    const response = await fetch(URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +37,9 @@ export default function Home() {
       body: JSON.stringify(users),
     });
     const result = await response.json();
-    console.log("User added:", result);
+    // console.log("User added:", result);
+    setIsEditing(false)
+    setUsers({ id: '', name: '', email: '' });
     // Refresh the list of users after adding
     const fetchusers = async () => {
       const response = await fetch("/api/getusers");
@@ -52,7 +58,7 @@ export default function Home() {
       body: JSON.stringify({ id }),
     });
     const result = await response.json();
-    console.log("User deleted:", result);
+    // console.log("User deleted:", result);
     // Refresh the list of users after deleting
     const fetchusers = async () => {
       const response = await fetch("/api/getusers");
@@ -62,9 +68,20 @@ export default function Home() {
     fetchusers();
   };
 
-  const updateUser = async (id) => {
-    console.log(`Update user with ID: ${id}`);
-    // Here you can implement the logic for updating the user
+  const updateUser = async (item) => {
+    const data = JSON.stringify({ id: item.id, name: item.name, email: item.email })
+    // console.log(data)
+
+    // const response = await fetch("/api/updateuser", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ id: item.id, name: item.name, email: item.email}),
+    // });
+    setUsers({ id: item.id, name: item.name, email: item.email })
+    // console.log(`"these are the uers" ${users}`)
+    setIsEditing(true)
   };
 
   return (
@@ -78,6 +95,7 @@ export default function Home() {
               type="text"
               id="name"
               name="name"
+              value={users.name}
               onChange={handleChange}
               required
             />
@@ -88,11 +106,12 @@ export default function Home() {
               type="email"
               id="email"
               name="email"
+              value={users.email}
               onChange={handleChange}
               required
             />
           </div>
-          <button type="submit">Add</button>
+          <button type="submit">{isEditing ? "Update" : "Add" }</button>
         </form>
         <div>
           {all.map((item) => (
@@ -101,7 +120,7 @@ export default function Home() {
               <h3>{item.name}</h3>
               <p>{item.email}</p>
               <button onClick={() => deleteuser(item.id)}>Delete</button>
-              <button onClick={() => updateUser(item.id)}>Update</button>
+              <button onClick={() => updateUser(item)}>Update</button>
             </div>
           ))}
         </div>
