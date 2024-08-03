@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [all, setAll] = useState([]);
 
-  const [users, setUsers] = useState({ id: '', name: '', email: '' });
-  
-  const [isEditing, setIsEditing] = useState(false)
+  const [users, setUsers] = useState({ id: "", name: "", email: "" });
+
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleChange = (e) => {
     setUsers({ ...users, [e.target.name]: e.target.value });
@@ -28,7 +28,7 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log("this is after submit:", users);
-    const URL = isEditing ? '/api/updateuser' : '/api/createusers';
+    const URL = isEditing ? "/api/updateuser" : "/api/createusers";
     const response = await fetch(URL, {
       method: "POST",
       headers: {
@@ -38,8 +38,8 @@ export default function Home() {
     });
     const result = await response.json();
     // console.log("User added:", result);
-    setIsEditing(false)
-    setUsers({ id: '', name: '', email: '' });
+    setIsEditing(false);
+    setUsers({ id: "", name: "", email: "" });
     // Refresh the list of users after adding
     const fetchusers = async () => {
       const response = await fetch("/api/getusers");
@@ -69,7 +69,11 @@ export default function Home() {
   };
 
   const updateUser = async (item) => {
-    const data = JSON.stringify({ id: item.id, name: item.name, email: item.email })
+    const data = JSON.stringify({
+      id: item.id,
+      name: item.name,
+      email: item.email,
+    });
     // console.log(data)
 
     // const response = await fetch("/api/updateuser", {
@@ -79,9 +83,9 @@ export default function Home() {
     //   },
     //   body: JSON.stringify({ id: item.id, name: item.name, email: item.email}),
     // });
-    setUsers({ id: item.id, name: item.name, email: item.email })
+    setUsers({ id: item.id, name: item.name, email: item.email });
     // console.log(`"these are the uers" ${users}`)
-    setIsEditing(true)
+    setIsEditing(true);
   };
 
   return (
@@ -89,29 +93,31 @@ export default function Home() {
       <h1>CRUD Operations In Next.js</h1>
       <div>
         <form className={styles.form} onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={users.name}
-              onChange={handleChange}
-              required
-            />
+          <div className={styles.tab}>
+            <div>
+              <label htmlFor="name">Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={users.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="email">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={users.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={users.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit">{isEditing ? "Update" : "Add" }</button>
+          <button type="submit">{isEditing ? "Update" : "Add"}</button>
         </form>
         <div>
           {all.map((item) => (
