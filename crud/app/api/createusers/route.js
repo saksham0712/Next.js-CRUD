@@ -1,7 +1,23 @@
-import { createUser } from "@/utils/createuser";
-import { NextResponse } from "next/server";
-// import { createUser } from "../../output"; // Adjust the import path as needed
+import prisma from "../prismaClient";
 
+import { NextResponse } from "next/server";
+
+
+
+const createUser = async (name, email) => {
+    try {
+        const results = await prisma.users.create({
+            data: { 
+                name,
+                email,
+            },
+        })
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw new Error('Error in creating user')
+    }
+}
 
 export async function POST(request) {
   try {

@@ -17,3 +17,17 @@
   justify-content: space-between;
   gap: 1rem;
 }
+.table, .td{
+  /* border: 0.1px solid black; */
+  width: auto;
+  padding: 0.5rem;
+}
+.th{
+  /* border: 0.1px solid black; */
+  width: auto;
+  padding: 0.5rem;
+text-align: left;
+}
+.tr:nth-child(even){
+  background-color: #f2f2f2;
+}

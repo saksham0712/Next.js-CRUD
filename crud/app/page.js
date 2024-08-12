@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 
@@ -87,7 +87,10 @@ export default function Home() {
     // console.log(`"these are the uers" ${users}`)
     setIsEditing(true);
   };
-
+  const cancel = () => {
+    setUsers({ id: "", name: "", email: "" });
+    setIsEditing(false);
+}
   return (
     <main className={styles.main}>
       <h1>CRUD Operations In Next.js</h1>
@@ -105,6 +108,7 @@ export default function Home() {
                 required
               />
             </div>
+            {isEditing ? <button onClick={cancel}>Cancel</button> : <div></div> }
             <div>
               <label htmlFor="email">Email:</label>
               <input
@@ -119,17 +123,34 @@ export default function Home() {
           </div>
           <button type="submit">{isEditing ? "Update" : "Add"}</button>
         </form>
-        <div>
+        <table className={styles.table}>
+          <thead>
+            <tr className={styles.tr}>
+              <th  className={styles.th}>Id</th>
+              <th className={styles.th}>Name</th>
+              <th className={styles.th}>Email</th>
+              <th className={styles.th}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+
           {all.map((item) => (
-            <div key={item.id} className={styles.tab}>
-              <p>{item.id}</p>
-              <h3>{item.name}</h3>
-              <p>{item.email}</p>
-              <button onClick={() => deleteuser(item.id)}>Delete</button>
-              <button onClick={() => updateUser(item)}>Update</button>
-            </div>
+            <tr  key={item.id} className={styles.tr}>
+            
+
+              <td  className={styles.td}>{item.id}</td>
+              <td className={styles.td}>{item.name}</td>
+                <td className={styles.td}>{item.email}</td>
+                <td className={styles.td}>
+
+                <button style={{marginRight: "10px"}} onClick={() => deleteuser(item.id)}>Delete</button>
+                <button onClick={() => updateUser(item)}>Update</button>
+
+                </td>
+              </tr>
           ))}
-        </div>
+          </tbody>
+        </table>
       </div>
     </main>
   );

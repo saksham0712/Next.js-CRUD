@@ -1,6 +1,17 @@
-import { queryData } from "@/utils/getQueryOutput";
-// import prisma from "@/utils/prismaClient";
+
+import prisma from "../prismaClient";
+
 import { NextResponse } from "next/server";
+
+const queryData = async () => {
+    try {
+      const queryOutput = await prisma.users.findMany();
+      return queryOutput;
+  
+  } catch (error) {
+      console.log(error)
+  }
+};
 
 export async function GET() { 
     try {
